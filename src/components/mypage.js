@@ -7,6 +7,8 @@ import Label from './styles/label';
 import FormContainer from './styles/form-container';
 import Input from './styles/input';
 import Button from './styles/button';
+import ErrorText from "./styles/error-text";
+
 import { CSSTransition } from 'react-transition-group';
 
 
@@ -78,6 +80,10 @@ const MyPage = () => {
         phoneNumber: '',
     });
 
+    const [errors, setErrors] = useState({
+        nickname: '',
+    });
+
     useEffect(() => {
         // Fetch user data using accessToken
         const accessToken = localStorage.getItem('accessToken');
@@ -137,10 +143,27 @@ const MyPage = () => {
         }
     };
 
+    const validateInput = () => {
+        let newErrors = {
+            nickname: '',
+        };
+
+        if (!userData.nickname || userData.nickname.length === 0) {
+            newErrors.nickname = '닉네임은 필수 입력값이에요.';
+            alert('닉네임을 입력해주세요.');
+        }
+
+        setErrors(newErrors);
+
+    };
+
     const handleSubmitBtn = (e) => {
         e.preventDefault();
 
-        // change localStorage data (name, nickname)
+        if (!validateInput()) {
+            return;
+        }
+
         localStorage.setItem('name', userData.name);
         localStorage.setItem('nickname', userData.nickname);
 
@@ -161,6 +184,7 @@ const MyPage = () => {
 
         setTimeout(() => {
             setShowMessage(false);
+            window.location.reload();
         }, 2000);
     };
 
@@ -178,6 +202,7 @@ const MyPage = () => {
                     <Label>
                         닉네임:
                         <Input type="text" value={userData.nickname || ''} onChange={(e) => handleInputChange('nickname', e.target.value)} />
+                        {errors.nickname && <ErrorText>{errors.nickname}</ErrorText>}
                     </Label>
 
                     <Label>

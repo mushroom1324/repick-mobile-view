@@ -294,29 +294,8 @@ const Closet = () => {
         };
 
         // POST 요청을 통해 가격 수정
-        axios.post(process.env.REACT_APP_API_SERVER + 'products/submit-price', null, config)
-            .then(response => {
-                console.log('Price Input Success:', response.data);
-
-                // 로컬 데이터를 직접 수정
-                const updatedProducts = sellingProduct.map((product) => {
-                    if (product.productId === productId) {
-                        return {
-                            ...product,
-                            productState: 'SELLING',
-                            price: price,
-                        };
-                    }
-                    return product;
-                });
-
-                setSellingProduct(updatedProducts);
-                closePriceInputModal();
-            })
-            .catch(error => {
-                console.error('Price Input Error:', error);
-                // 에러 처리 로직
-            });
+        axios.post(process.env.REACT_APP_API_SERVER + 'products/submit-price', null, config);
+        window.location.reload();
     };
 
     const parseCreatedDate = (createdDate) => {

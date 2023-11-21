@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import loginHandler from '../api/login/login';
 import logoutHandler from '../api/login/logout';
 import { CSSTransition } from 'react-transition-group';
+import logo from '../assets/logo.svg';
+import kakao_logo from '../assets/kakao_login_small.png';
 
 function Header() {
     const [showMenu, setShowMenu] = useState(false);
@@ -30,12 +32,12 @@ function Header() {
     return (
         <HeaderComp className="header">
             <div className="header__left">
-                <img src="https://github.com/Repick-official/repick-front/assets/76674422/30affaf1-3276-4eda-ad5f-38d54053f99a" alt="logo" onClick={() => window.location.href = '/'} />
+                <img src={logo} alt="logo" onClick={() => window.location.href = '/'} />
             </div>
             <div className="header__right">
                 {nickname
                     ? <button onClick={handleMyPageClick}>{nickname}</button>
-                    : <img src="https://github.com/Repick-official/repick-front/assets/76674422/3f758b40-05b1-4a94-9b7c-66d324154ae4" alt="login" onClick={loginHandler} />
+                    : <img src={kakao_logo} alt="login" onClick={loginHandler} />
                 }
             </div>
             <CSSTransition in={showMenu} timeout={200} classNames="menu" unmountOnExit>
