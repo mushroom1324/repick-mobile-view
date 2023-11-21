@@ -5,10 +5,11 @@ import axios from 'axios';
 
 function LoginCode() {
     const code = new URL(document.location.toString()).searchParams.get('code');
+    const REDIRECT_URI = process.env.REACT_APP_KAKAO_REDIRECT_URI;
 
     const queryParams = {
         code: code,
-        redirect_uri: 'http://localhost:3000/login/kakaoLogin',
+        redirect_uri: REDIRECT_URI,
     };
 
     useEffect(() => {
