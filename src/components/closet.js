@@ -223,7 +223,6 @@ const Closet = () => {
     };
 
     const handleBagDispatchedConfirm = () => {
-        const { orderId } = selectedOrder;
         const accessToken = localStorage.getItem('accessToken');
 
 

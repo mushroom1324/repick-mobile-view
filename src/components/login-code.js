@@ -7,12 +7,13 @@ function LoginCode() {
     const code = new URL(document.location.toString()).searchParams.get('code');
     const REDIRECT_URI = process.env.REACT_APP_KAKAO_REDIRECT_URI;
 
-    const queryParams = {
-        code: code,
-        redirect_uri: REDIRECT_URI,
-    };
-
     useEffect(() => {
+
+        const queryParams = {
+            code: code,
+            redirect_uri: REDIRECT_URI,
+        };
+
         axios.get(process.env.REACT_APP_API_SERVER + "oauth/kakao", {
             params: queryParams,
         }).then((response) => {
