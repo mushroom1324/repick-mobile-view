@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import axios from 'axios';
 import DaumPostcode from 'react-daum-postcode';
 import Title from './styles/title';
@@ -6,8 +7,11 @@ import Label from './styles/label';
 import FormContainer from './styles/form-container';
 import Input from './styles/input';
 import Button from './styles/button';
+import PostalCodeButton from './styles/postal-code-button';
 import ErrorText from "./styles/error-text";
-import {ModalWrapper, ModalContent, CloseButton } from './styles/modal-wrapper';
+import { ModalTitle, ModalWrapper, ModalContent, CloseButton } from './styles/modal-wrapper';
+import bag_info from '../assets/bag_info.jpg';
+import question_mark from '../assets/question-mark-circle-outline.svg';
 
 
 const SellerForm = () => {
@@ -42,6 +46,13 @@ const SellerForm = () => {
         detailAddress: '',
     });
 
+    const [showModal, setShowModal] = useState(false);
+
+    const handleModalToggle = (e) => {
+        e.preventDefault();
+        setShowModal(!showModal);
+    };
+
     useEffect(() => {
         // Fetch user data using accessToken
         const accessToken = localStorage.getItem('accessToken');
@@ -55,8 +66,28 @@ const SellerForm = () => {
         axios.get(process.env.REACT_APP_API_SERVER + 'sign/userInfo', config)
             .then(response => {
                 setUserData(response.data);
+                if (response.data.address === null) {
+                    setUserData(prevUserData => ({
+                        ...prevUserData,
+                        address: {
+                            detailAddress: '',
+                            mainAddress: '',
+                            zipCode: '',
+                        }
+                    }));
+                }
+                if (response.data.bank === null) {
+                    setUserData(prevUserData => ({
+                        ...prevUserData,
+                        bank: {
+                            accountNumber: '',
+                            bankName: '',
+                        }
+                    }));
+                }
             })
             .catch(error => {
+                alert('로그인 중 문제가 발생했습니다.');
                 console.error('Error fetching user data:', error);
             });
     }, []);
@@ -161,8 +192,8 @@ const SellerForm = () => {
             newErrors.bagQuantity = '리픽백 수량을 1개 이상 입력해주세요.';
         }
 
-        if (userData.productQuantity == null || userData.productQuantity < 1) {
-            newErrors.productQuantity = '의류 수량을 1개 이상 입력해주세요.';
+        if (userData.productQuantity == null || userData.productQuantity < 5) {
+            newErrors.productQuantity = '의류 수량은 5개 이상 입력해주세요.';
         }
 
         setErrors(newErrors);
@@ -270,7 +301,7 @@ const SellerForm = () => {
                             <Label>
                                 이름:
                                 <Input
-                                    type="text" value={userData.name || ''}
+                                    type="text" value={userData.name}
                                     onChange={(e) => handleInputChange('name', e.target.value)}
                                     placeholder="실명을 입력해주세요"
                                 />
@@ -280,7 +311,7 @@ const SellerForm = () => {
                             <Label>
                                 이메일:
                                 <Input
-                                    type="text" value={userData.email || ''}
+                                    type="text" value={userData.email}
                                     onChange={(e) => handleInputChange('email', e.target.value)}
                                     placeholder="전화번호가 잘못되었을 경우 비상 연락망"
                                 />
@@ -291,7 +322,7 @@ const SellerForm = () => {
                                 휴대폰 번호:
                                 <Input
                                     type="text"
-                                    value={userData.phoneNumber || ''}
+                                    value={userData.phoneNumber}
                                     onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
                                     placeholder="01012345678"
                                 />
@@ -315,6 +346,8 @@ const SellerForm = () => {
 
                             <Label>
                                 리픽백 수량:
+                                <QuestionMarkImage src={question_mark} onClick={handleModalToggle} alt="?" />
+                                {showModal && <BagInfoModal onClose={handleModalToggle} />}
                                 <Input
                                     type="number"
                                     value={userData.bagQuantity}
@@ -328,10 +361,9 @@ const SellerForm = () => {
                     <div id={"step3"}>
                         <p>3단계 : 배송 정보</p>
                         <Label>
-                            배송지 주소:
                             <Label>
-                                우편번호: {userData.address.zipCode + '  ' || ''}
-                                <Button onClick={handlePostcodeButtonClick}>우편번호 찾기</Button>
+                                우편번호: {userData.address ? userData.address.zipCode + '  ' : ''}
+                                <PostalCodeButton onClick={handlePostcodeButtonClick}>우편번호 찾기</PostalCodeButton>
                                 {errors.zipCode && <ErrorText>{errors.zipCode}</ErrorText>}
                             </Label>
 
@@ -345,7 +377,7 @@ const SellerForm = () => {
                                 주소:
                                 <Input
                                     type="text"
-                                    value={userData.address.mainAddress || ''}
+                                    value={userData.address ? userData.address.mainAddress : ''}
                                     onChange={(e) => handleInputChange('address.mainAddress', e.target.value)}
                                 />
                                 {errors.mainAddress && <ErrorText>{errors.mainAddress}</ErrorText>}
@@ -355,7 +387,7 @@ const SellerForm = () => {
                                 상세주소:
                                 <Input
                                     type="text"
-                                    value={userData.address.detailAddress || ''}
+                                    value={userData.address ? userData.address.detailAddress : ''}
                                     onChange={(e) => handleInputChange('address.detailAddress', e.target.value)}
                                 />
                                 {errors.detailAddress && <ErrorText>{errors.detailAddress}</ErrorText>}
@@ -365,7 +397,7 @@ const SellerForm = () => {
                                 배송 요청사항:
                                 <Input
                                     type="text"
-                                    value={userData.address.request || ''}
+                                    value={userData.address ? userData.address.request : ''}
                                     onChange={(e) => handleInputChange('address.request', e.target.value)}
                                     placeholder={'배송 시 요청사항을 입력해주세요'}
                                 />
@@ -377,6 +409,32 @@ const SellerForm = () => {
                 </form>
             </FormContainer>
         </>
+    );
+};
+
+const QuestionMarkImage = styled.img`
+    width: 25px;
+    height: 25px;
+    float: right;
+    cursor: pointer;
+`;
+
+const BagInfoImage = styled.img`
+  width: calc(100% - 20px);
+  border: 1px solid #ccc;
+  padding: 10px;
+`;
+
+const BagInfoModal = () => {
+    return (
+        <div className="modal">
+            <div className="modal-content">
+                <BagInfoImage src={bag_info} alt="리픽백 수량 이미지" />
+                <p>리픽백은 여러분의 의류를 안전하게 수거하기 위해 무료로 배송해드립니다.</p>
+                <p>규격: 600mm * 700mm</p>
+                <p>리픽백은 티셔츠 약 30벌을 수납할 수 있습니다.</p>
+            </div>
+        </div>
     );
 };
 

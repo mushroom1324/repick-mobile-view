@@ -97,8 +97,28 @@ const MyPage = () => {
         axios.get(process.env.REACT_APP_API_SERVER + 'sign/userInfo', config)
             .then(response => {
                 setUserData(response.data);
+                if (response.data.address === null) {
+                    setUserData(prevUserData => ({
+                        ...prevUserData,
+                        address: {
+                            detailAddress: '',
+                            mainAddress: '',
+                            zipCode: '',
+                        }
+                    }));
+                }
+                if (response.data.bank === null) {
+                    setUserData(prevUserData => ({
+                        ...prevUserData,
+                        bank: {
+                            accountNumber: '',
+                            bankName: '',
+                        }
+                    }));
+                }
             })
             .catch(error => {
+                alert('로그인 중 문제가 발생했습니다.')
                 console.error('Error fetching user data:', error);
             });
     }, []);
@@ -196,19 +216,19 @@ const MyPage = () => {
                     <Title>마이페이지</Title>
                     <Label>
                         이름:
-                        <Input type="text" value={userData.name || ''} onChange={(e) => handleInputChange('name', e.target.value)} />
+                        <Input type="text" value={userData.name} onChange={(e) => handleInputChange('name', e.target.value)} />
                     </Label>
 
                     <Label>
                         닉네임:
-                        <Input type="text" value={userData.nickname || ''} onChange={(e) => handleInputChange('nickname', e.target.value)} />
+                        <Input type="text" value={userData.nickname} onChange={(e) => handleInputChange('nickname', e.target.value)} />
                         {errors.nickname && <ErrorText>{errors.nickname}</ErrorText>}
                     </Label>
 
                     <Label>
                         이메일:
                         <Input
-                            type="text" value={userData.email || ''}
+                            type="text" value={userData.email}
                             onChange={(e) => handleInputChange('email', e.target.value)}
                         />
                     </Label>
@@ -217,14 +237,14 @@ const MyPage = () => {
                         휴대폰 번호:
                         <Input
                             type="text"
-                            value={userData.phoneNumber || ''}
+                            value={userData.phoneNumber}
                             onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
                             placeholder="01012345678"
                         />
                     </Label>
 
                     <Label>
-                        우편번호: {userData.address.zipCode + '  ' || ''}
+                        우편번호: {userData.address ? userData.address.zipCode : ''}
                         <Button onClick={handlePostcodeButtonClick}>우편번호 찾기</Button>
                     </Label>
 
@@ -238,7 +258,7 @@ const MyPage = () => {
                         주소:
                         <Input
                             type="text"
-                            value={userData.address.mainAddress || ''}
+                            value={userData.address ? userData.address.mainAddress : ''}
                             onChange={(e) => handleInputChange('address.mainAddress', e.target.value)}
                         />
                     </Label>
@@ -247,7 +267,7 @@ const MyPage = () => {
                         상세주소:
                         <Input
                             type="text"
-                            value={userData.address.detailAddress || ''}
+                            value={userData.address ? userData.address.detailAddress : ''}
                             onChange={(e) => handleInputChange('address.detailAddress', e.target.value)}
                         />
                     </Label>
@@ -256,7 +276,7 @@ const MyPage = () => {
                         은행명:
                         <Input
                             type="text"
-                            value={userData.bank.bankName || ''}
+                            value={userData.bank ? userData.bank.bankName : ''}
                             onChange={(e) => handleInputChange('bank.bankName', e.target.value)}
                         />
                     </Label>
@@ -265,7 +285,7 @@ const MyPage = () => {
                         계좌번호:
                         <Input
                             type="text"
-                            value={userData.bank.accountNumber || ''}
+                            value={userData.bank ? userData.bank.accountNumber : ''}
                             onChange={(e) => handleInputChange('bank.accountNumber', e.target.value)}
                         />
                     </Label>
