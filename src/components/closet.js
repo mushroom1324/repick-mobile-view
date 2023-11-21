@@ -2,6 +2,17 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import Title from './styles/title';
+import Button from './styles/button';
+import {ModalTitle} from "./styles/modal-wrapper";
+import {BagPendingModalWrapper, BagPendingCloseButton, BagPendingModalContent, BagPendingModalTitle} from "./styles/bag-modal";
+
+
+const NoProductMessage = styled.p`
+  text-align: center;
+  color: #888;
+  font-size: 1.2em;
+  margin-top: 20px;
+`;
 
 const SellerPageContainer = styled.div`
   max-width: 90%;
@@ -54,10 +65,6 @@ const PriceInputModal = styled.div`
   padding: 40px;
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-`;
-
-const ModalTitle = styled.h3`
-  margin-top: 0;
 `;
 
 const PriceInputLabel = styled.label`
@@ -141,12 +148,18 @@ const OrderItemTitle = styled.h3`
   font-size: 1.2em;
 `;
 
-const SellerPage = () => {
-    const [products, setProducts] = useState([]);
+const Closet = () => {
+    const [preparingProduct, setPreparingProduct] = useState([]);
+    const [sellingProduct, setSellingProduct] = useState([]);
+    const [soldProduct, setSoldProduct] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [priceInputModal, setPriceInputModal] = useState(false);
     const [priceInput, setPriceInput] = useState('');
     const [orderHistory, setOrderHistory] = useState([]);
+    const [priceSum, setPriceSum] = useState(0);
+
+    const [bagDispatchedModal, setBagDispatchedModal] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null);
 
     useEffect(() => {
         console.log(process.env.REACT_APP_API_SERVER)
@@ -157,14 +170,38 @@ const SellerPage = () => {
             },
         };
 
-        axios.get(process.env.REACT_APP_API_SERVER + 'sell/history/published', config)
+        // 판매준비 상품 가져오기
+        axios.get(process.env.REACT_APP_API_SERVER + 'sell/history/preparing', config)
             .then(response => {
-                setProducts(response.data);
+                setPreparingProduct(response.data);
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
             });
 
+        // 판매중 상품 가져오기
+        axios.get(process.env.REACT_APP_API_SERVER + 'sell/history/selling', config)
+            .then(response => {
+                setSellingProduct(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+            });
+
+        // 판매 완료 상품 가져오기
+        axios.get(process.env.REACT_APP_API_SERVER + 'sell/history/sold', config)
+            .then(response => {
+                setSoldProduct(response.data);
+                let sum = 0;
+                response.data.forEach(item => {
+                    sum += item.price;
+                });
+                setPriceSum(sum);
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+            });
+        // 판매 요청 가져오기
         axios.get(process.env.REACT_APP_API_SERVER + 'sell/history/requests', config)
             .then(response => {
                 setOrderHistory(response.data);
@@ -174,8 +211,55 @@ const SellerPage = () => {
             });
     }, []);
 
+    // 리픽백 배출 완료 버튼을 눌렀을 때 처리하는 함수
+    const openBagDispatchedModal = (order) => {
+        setSelectedOrder(order);
+        setBagDispatchedModal(true);
+    };
+
+    const closeBagDispatchedModal = () => {
+        setSelectedOrder(null);
+        setBagDispatchedModal(false);
+    };
+
+    const handleBagDispatchedConfirm = () => {
+        const { orderId } = selectedOrder;
+        const accessToken = localStorage.getItem('accessToken');
+
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            }
+        };
+
+        const body = {
+            orderNumber: selectedOrder.orderNumber,
+        }
+
+        axios.post(process.env.REACT_APP_API_SERVER + 'sell/bag-ready', body, config)
+            .then(response => {
+                console.log('Bag Dispatched Success:', response.data);
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Bag Dispatched Error:', error);
+            });
+    };
+
+
+    // 정산 신청 버튼 핸들러
+    const handleSettlementClick = () => {
+        // localStorage에 productIds 저장
+        localStorage.setItem('soldProduct', JSON.stringify(soldProduct));
+        // localStorage에 priceSum 저장
+        localStorage.setItem('priceSum', priceSum);
+
+        window.location.href = '/settlement';
+    };
+
     const handleApplyClick = () => {
-        // Handle apply action
+        window.location.href = '/sell';
     };
 
     const openPriceInputModal = (product) => {
@@ -216,7 +300,7 @@ const SellerPage = () => {
                 console.log('Price Input Success:', response.data);
 
                 // 로컬 데이터를 직접 수정
-                const updatedProducts = products.map((product) => {
+                const updatedProducts = sellingProduct.map((product) => {
                     if (product.productId === productId) {
                         return {
                             ...product,
@@ -227,7 +311,7 @@ const SellerPage = () => {
                     return product;
                 });
 
-                setProducts(updatedProducts);
+                setSellingProduct(updatedProducts);
                 closePriceInputModal();
             })
             .catch(error => {
@@ -252,11 +336,11 @@ const SellerPage = () => {
             case 'REQUESTED':
                 return '옷장 정리 요청됨';
             case 'BAG_PENDING':
-                return '취소됨';
-            case 'BAG_READY':
                 return '리픽백 배송됨';
-            case 'CANCELLED':
+            case 'BAG_READY':
                 return '리픽백 배출됨';
+            case 'CANCELLED':
+                return '취소됨';
             case 'DELIVERED':
                 return '리픽백 수거됨';
             case 'PUBLISHED':
@@ -270,12 +354,12 @@ const SellerPage = () => {
     return (
         <SellerPageContainer>
             <Title>옷장 정리</Title>
-            <p>현재 {products.length}건의 상품이 등록되어 있습니다.</p>
+            <p>현재 {preparingProduct.length}건의 상품이 등록되어 있습니다.</p>
             <ApplyButton onClick={handleApplyClick}>옷장 정리 신청하러 가기</ApplyButton>
 
             <ProductList>
-                <h2>판매중인 상품 현황</h2>
-                {products.map((product) => (
+                <h2>판매 준비중인 상품 현황</h2>
+                {preparingProduct.length > 0 ? [...preparingProduct].reverse().map((product) => (
                     <Product key={product.productId}>
                         <ProductImage src={product.mainImageFile.imagePath} alt="Product" />
                         <div>
@@ -290,7 +374,53 @@ const SellerPage = () => {
                             {product.price && <ProductPrice>가격: {product.price}원</ProductPrice>}
                         </div>
                     </Product>
-                ))}
+                )) : <NoProductMessage>해당하는 상품이 없습니다.</NoProductMessage>}
+            </ProductList>
+
+            <ProductList>
+                <h2>판매중인 상품 현황</h2>
+                {sellingProduct.length > 0 ? [...sellingProduct].reverse().map((product) => (
+                    <Product key={product.productId}>
+                        <ProductImage src={product.mainImageFile.imagePath} alt="Product" />
+                        <div>
+                            <ProductTitle>{product.name}</ProductTitle>
+                            {(product.productState === 'BEFORE_SMS' ||
+                                    product.productState === 'PREPARING') &&
+                                !product.price && (
+                                    <PriceInputButton onClick={() => openPriceInputModal(product)}>
+                                        가격 입력하기
+                                    </PriceInputButton>
+                                )}
+                            {product.price && <ProductPrice>가격: {product.price}원</ProductPrice>}
+                        </div>
+                    </Product>
+                )) : <NoProductMessage>해당하는 상품이 없습니다.</NoProductMessage>}
+            </ProductList>
+
+            <ProductList>
+                <h2>판매 완료 상품 현황</h2>
+                {soldProduct.length > 0 ? [...soldProduct].reverse().map((product) => (
+                    <Product key={product.productId}>
+                        <ProductImage src={product.mainImageFile.imagePath} alt="Product" />
+                        <div>
+                            <ProductTitle>{product.name}</ProductTitle>
+                            {(product.productState === 'BEFORE_SMS' ||
+                                    product.productState === 'PREPARING') &&
+                                !product.price && (
+                                    <PriceInputButton onClick={() => openPriceInputModal(product)}>
+                                        가격 입력하기
+                                    </PriceInputButton>
+                                )}
+                            {product.price && <ProductPrice>가격: {product.price}원</ProductPrice>}
+                        </div>
+                    </Product>
+                )) : <NoProductMessage>해당하는 상품이 없습니다.</NoProductMessage>}
+                {soldProduct.length > 0 && (
+                    <>
+                        <p>총 {priceSum}원 정산 대기중입니다.</p>
+                        <ApplyButton onClick={handleSettlementClick}>정산 신청하기</ApplyButton>
+                    </>
+                )}
             </ProductList>
 
             <PriceInputModal show={priceInputModal}>
@@ -309,7 +439,7 @@ const SellerPage = () => {
             <OrderHistoryContainer>
                 <h2>판매 주문 기록</h2>
                 <p>총 {orderHistory.length}건의 기록이 있습니다.</p>
-                {orderHistory.map((order) => (
+                {[...orderHistory].reverse().map((order) => (
                     <OrderItemContainer key={order.orderId}>
                         <OrderItemInfo>
                             <OrderItemTitle>{parseCreatedDate(order.createdDate)}</OrderItemTitle>
@@ -323,11 +453,23 @@ const SellerPage = () => {
                             </QuantityContainer>
                         </OrderItemDetails>
                         <OrderItemPrice>{parseSellState(order.sellState)}</OrderItemPrice>
+                        {order.sellState === 'BAG_PENDING' && (
+                            <Button onClick={() => openBagDispatchedModal(order)}>
+                                리픽백 배출
+                            </Button>
+                        )}
                     </OrderItemContainer>
                 ))}
             </OrderHistoryContainer>
+
+            <BagPendingModalWrapper show={bagDispatchedModal}>
+                <BagPendingModalTitle>리픽백 배출 확인</BagPendingModalTitle>
+                <BagPendingModalContent>리픽백 배출을 완료하셨나요?</BagPendingModalContent>
+                <BagPendingCloseButton onClick={handleBagDispatchedConfirm}>예</BagPendingCloseButton>
+                <BagPendingCloseButton onClick={closeBagDispatchedModal}>아니오</BagPendingCloseButton>
+            </BagPendingModalWrapper>
         </SellerPageContainer>
     );
 };
 
-export default SellerPage;
+export default Closet;

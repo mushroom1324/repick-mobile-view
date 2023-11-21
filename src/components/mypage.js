@@ -3,38 +3,12 @@ import styled from 'styled-components';
 import axios from 'axios';
 import DaumPostcode from 'react-daum-postcode';
 import Title from './styles/title';
+import Label from './styles/label';
+import FormContainer from './styles/form-container';
+import Input from './styles/input';
+import Button from './styles/button';
+import { CSSTransition } from 'react-transition-group';
 
-const FormContainer = styled.div`
-  max-width: 90%;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-`;
-
-const Label = styled.label`
-  display: block;
-  margin-bottom: 8px;
-  color: #000;
-`;
-
-const Input = styled.input`
-  width: calc(100% - 16px);
-  padding: 8px;
-  margin-bottom: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-`;
-
-const Button = styled.button`
-  padding: 8px;
-  cursor: pointer;
-  background-color: #000;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-`;
 
 const ModalWrapper = styled.div`
   display: ${(props) => (props.show ? 'flex' : 'none')};
@@ -64,8 +38,30 @@ const CloseButton = styled.button`
   border-radius: 4px;
 `;
 
+const ModalBackground = styled.div`
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+`;
+
+const MessageModal = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: black;
+  color: white;
+  border-radius: 8px;
+  z-index: 1001;
+`;
 
 const MyPage = () => {
+    const [showMessage, setShowMessage] = useState(false);
     const [userData, setUserData] = useState({
         address: {
             detailAddress: '',
@@ -124,7 +120,8 @@ const MyPage = () => {
         handleCloseModal();
     };
 
-    const handlePostcodeButtonClick = () => {
+    const handlePostcodeButtonClick = (e) => {
+        e.preventDefault();
         // Open Daum Postcode modal when the button is clicked
         document.getElementById('postcode-modal').style.display = 'block';
     };
@@ -135,13 +132,17 @@ const MyPage = () => {
     };
 
     const handleOverlayClick = (e) => {
-        if (e.target.id === 'postcode-modal') {
+        if (e.target.type !== 'button') {
             handleCloseModal();
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmitBtn = (e) => {
         e.preventDefault();
+
+        // change localStorage data (name, nickname)
+        localStorage.setItem('name', userData.name);
+        localStorage.setItem('nickname', userData.nickname);
 
         // Update user data using accessToken
         // userData is body data
@@ -153,75 +154,106 @@ const MyPage = () => {
             },
         };
 
-        axios.patch(process.env.REACT_APP_API_SERVER + 'sign/update', userData, config);
+        axios.patch(process.env.REACT_APP_API_SERVER + 'sign/update', userData, config)
+            .then(() => {
+                setShowMessage(true);
+            });
+
+        setTimeout(() => {
+            setShowMessage(false);
+        }, 2000);
     };
 
 
     return (
-        <FormContainer onClick={handleOverlayClick}>
-            <form onSubmit={handleSubmit}>
-                <Title>마이페이지</Title>
-                <Label>
-                    이름:
-                    <Input type="text" value={userData.name || ''} onChange={(e) => handleInputChange('name', e.target.value)} />
-                </Label>
+        <>
+            <FormContainer>
+                <form>
+                    <Title>마이페이지</Title>
+                    <Label>
+                        이름:
+                        <Input type="text" value={userData.name || ''} onChange={(e) => handleInputChange('name', e.target.value)} />
+                    </Label>
 
-                <Label>
-                    닉네임:
-                    <Input type="text" value={userData.nickname || ''} onChange={(e) => handleInputChange('nickname', e.target.value)} />
-                </Label>
+                    <Label>
+                        닉네임:
+                        <Input type="text" value={userData.nickname || ''} onChange={(e) => handleInputChange('nickname', e.target.value)} />
+                    </Label>
 
-                <Label>
-                    우편번호:
-                    <Button onClick={handlePostcodeButtonClick}>우편번호 찾기</Button>
-                </Label>
+                    <Label>
+                        이메일:
+                        <Input
+                            type="text" value={userData.email || ''}
+                            onChange={(e) => handleInputChange('email', e.target.value)}
+                        />
+                    </Label>
 
-                <ModalWrapper show={false} id="postcode-modal">
-                    <ModalContent>
-                        <DaumPostcode onComplete={handlePostcodeComplete} />
-                        <CloseButton onClick={handleCloseModal}>닫기</CloseButton>
-                    </ModalContent>
-                </ModalWrapper>
+                    <Label>
+                        휴대폰 번호:
+                        <Input
+                            type="text"
+                            value={userData.phoneNumber || ''}
+                            onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                            placeholder="01012345678"
+                        />
+                    </Label>
 
-                <Label>
-                    주소:
-                    <Input
-                        type="text"
-                        value={userData.address.mainAddress || ''}
-                        onChange={(e) => handleInputChange('address.mainAddress', e.target.value)}
-                    />
-                </Label>
+                    <Label>
+                        우편번호: {userData.address.zipCode + '  ' || ''}
+                        <Button onClick={handlePostcodeButtonClick}>우편번호 찾기</Button>
+                    </Label>
 
-                <Label>
-                    상세주소:
-                    <Input
-                        type="text"
-                        value={userData.address.detailAddress || ''}
-                        onChange={(e) => handleInputChange('address.detailAddress', e.target.value)}
-                    />
-                </Label>
+                    <ModalWrapper show={false} id="postcode-modal" onClick={handleOverlayClick}>
+                        <ModalContent>
+                            <DaumPostcode onComplete={handlePostcodeComplete} />
+                            <CloseButton onClick={handleCloseModal}>닫기</CloseButton>
+                        </ModalContent>
+                    </ModalWrapper>
+                    <Label>
+                        주소:
+                        <Input
+                            type="text"
+                            value={userData.address.mainAddress || ''}
+                            onChange={(e) => handleInputChange('address.mainAddress', e.target.value)}
+                        />
+                    </Label>
 
-                <Label>
-                    은행명:
-                    <Input
-                        type="text"
-                        value={userData.bank.bankName || ''}
-                        onChange={(e) => handleInputChange('bank.bankName', e.target.value)}
-                    />
-                </Label>
+                    <Label>
+                        상세주소:
+                        <Input
+                            type="text"
+                            value={userData.address.detailAddress || ''}
+                            onChange={(e) => handleInputChange('address.detailAddress', e.target.value)}
+                        />
+                    </Label>
 
-                <Label>
-                    계좌번호:
-                    <Input
-                        type="text"
-                        value={userData.bank.accountNumber || ''}
-                        onChange={(e) => handleInputChange('bank.accountNumber', e.target.value)}
-                    />
-                </Label>
+                    <Label>
+                        은행명:
+                        <Input
+                            type="text"
+                            value={userData.bank.bankName || ''}
+                            onChange={(e) => handleInputChange('bank.bankName', e.target.value)}
+                        />
+                    </Label>
 
-                <Button type="submit">저장</Button>
-            </form>
-        </FormContainer>
+                    <Label>
+                        계좌번호:
+                        <Input
+                            type="text"
+                            value={userData.bank.accountNumber || ''}
+                            onChange={(e) => handleInputChange('bank.accountNumber', e.target.value)}
+                        />
+                    </Label>
+
+                    <Button onClick={handleSubmitBtn}>저장</Button>
+                </form>
+            </FormContainer>
+            <CSSTransition in={showMessage} classNames="message" unmountOnExit>
+                <ModalBackground>
+                    <MessageModal>수정이 완료되었습니다!</MessageModal>
+                </ModalBackground>
+            </CSSTransition>
+        </>
     );
 };
 
