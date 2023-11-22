@@ -7,10 +7,14 @@ import SellerForm from './components/sell';
 import SellComplete from './components/sell-complete';
 import SettlementForm from './components/settlement';
 import SettlementComplete from './components/settlement-complete';
-import Header from './components/header';
 import LoginCode from './components/login-code';
 import MyPage from './components/mypage';
+
+import Header from './components/header';
 import Footer from './components/footer';
+
+import AdminProductSubmitForm from './components/admin/product-submit';
+import AdminBagPender from "./components/admin/bag-pender";
 
 function App() {
     return (
@@ -27,6 +31,9 @@ function App() {
                     <Route path='/sell-complete' element={<SellComplete />} />
                     <Route path='/settlement' element={<SettlementForm />} />
                     <Route path='/settlement-complete' element={<SettlementComplete />} />
+
+                    <Route path='/admin/product-submit' element={<AdminProductSubmitForm />} />
+                    <Route path='/admin/sell-requests' element={<AdminBagPender />} />
                 </Routes>
             </BrowserRouter>
             <Footer />

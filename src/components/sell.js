@@ -14,6 +14,16 @@ import bag_info from '../assets/bag_info.jpg';
 import question_mark from '../assets/question-mark-circle-outline.svg';
 import loginHandler from "../api/login/login";
 
+const TextContainer = styled.div`
+    display: flex;
+    margin-top: 20px;
+    width: 100%;
+    justify-content: space-between;
+`;
+
+const Text = styled.div`
+    color: #555556;
+`;
 
 const SellerForm = () => {
     const [step, setStep] = useState(1);
@@ -314,7 +324,7 @@ const SellerForm = () => {
                         <Label>
                             <p>1단계 : 기본 정보</p>
                             <Label>
-                                이름:
+                                <Text>이름:</Text>
                                 <Input
                                     type="text" value={userData.name}
                                     onChange={(e) => handleInputChange('name', e.target.value)}
@@ -324,7 +334,7 @@ const SellerForm = () => {
                             </Label>
 
                             <Label>
-                                이메일:
+                                <Text>이메일:</Text>
                                 <Input
                                     type="text" value={userData.email}
                                     onChange={(e) => handleInputChange('email', e.target.value)}
@@ -334,7 +344,7 @@ const SellerForm = () => {
                             </Label>
 
                             <Label>
-                                휴대폰 번호:
+                                <Text>휴대폰 번호:</Text>
                                 <Input
                                     type="text"
                                     value={userData.phoneNumber}
@@ -350,7 +360,7 @@ const SellerForm = () => {
                         <Label>
                             <p>2단계 : 의류 및 리픽백 수량 정보</p>
                             <Label>
-                                의류 수량:
+                                <Text>의류 수량:</Text>
                                 <Input
                                     type="number"
                                     value={userData.productQuantity}
@@ -360,8 +370,10 @@ const SellerForm = () => {
                             </Label>
 
                             <Label>
-                                리픽백 수량:
-                                <QuestionMarkImage src={question_mark} onClick={handleModalToggle} alt="?" />
+                                <TextContainer>
+                                    <Text>리픽백 수량:</Text>
+                                    <QuestionMarkImage src={question_mark} onClick={handleModalToggle} alt="?" />
+                                </TextContainer>
                                 {showModal && <BagInfoModal onClose={handleModalToggle} />}
                                 <Input
                                     type="number"
@@ -389,7 +401,7 @@ const SellerForm = () => {
                                 </ModalContent>
                             </ModalWrapper>
                             <Label>
-                                주소:
+                                <Text>주소:</Text>
                                 <Input
                                     type="text"
                                     value={userData.address ? userData.address.mainAddress : ''}
@@ -399,7 +411,7 @@ const SellerForm = () => {
                             </Label>
 
                             <Label>
-                                상세주소:
+                                <Text>상세주소:</Text>
                                 <Input
                                     type="text"
                                     value={userData.address ? userData.address.detailAddress : ''}
@@ -409,7 +421,7 @@ const SellerForm = () => {
                             </Label>
 
                             <Label>
-                                배송 요청사항:
+                                <Text>배송 요청사항:</Text>
                                 <Input
                                     type="text"
                                     value={userData.requestDetail}
@@ -430,14 +442,12 @@ const SellerForm = () => {
 const QuestionMarkImage = styled.img`
     width: 25px;
     height: 25px;
-    float: right;
-    cursor: pointer;
 `;
 
 const BagInfoImage = styled.img`
-  width: calc(100% - 20px);
-  border: 1px solid #ccc;
-  padding: 10px;
+    width: calc(100% - 20px);
+    border: 1px solid #ccc;
+    padding: 10px;
 `;
 
 const BagInfoModal = () => {

@@ -155,7 +155,7 @@ function Home() {
                 <BannerImage5 src={banner5} alt="Banner 5" />
             )}
             <DesktopButtonContainer>
-                <DesktopButton onClick={handleClickBtn}>옷장 신청하러 가기</DesktopButton>
+                <DesktopButton onClick={handleClickBtn}>옷장 정리 신청하러 가기</DesktopButton>
             </DesktopButtonContainer>
         </>
     );

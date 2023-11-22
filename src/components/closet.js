@@ -8,6 +8,10 @@ import {BagPendingModalWrapper, BagPendingCloseButton, BagPendingModalContent, B
 import loginHandler from "../api/login/login";
 
 
+const H2 = styled.h2`
+  color: #3E3E3F;
+`
+
 const NoProductMessage = styled.p`
   text-align: center;
   color: #888;
@@ -351,7 +355,7 @@ const Closet = () => {
             <ApplyButton onClick={handleApplyClick}>옷장 정리 신청하러 가기</ApplyButton>
 
             <ProductList>
-                <h2>판매 준비중인 상품 현황</h2>
+                <H2>판매 준비 중인 상품 현황</H2>
                 {preparingProduct.length > 0 ? [...preparingProduct].reverse().map((product) => (
                     <Product key={product.productId}>
                         <ProductImage src={product.mainImageFile.imagePath} alt="Product" />
@@ -371,7 +375,7 @@ const Closet = () => {
             </ProductList>
 
             <ProductList>
-                <h2>판매중인 상품 현황</h2>
+                <H2>판매 중인 상품 현황</H2>
                 {sellingProduct.length > 0 ? [...sellingProduct].reverse().map((product) => (
                     <Product key={product.productId}>
                         <ProductImage src={product.mainImageFile.imagePath} alt="Product" />
@@ -391,7 +395,7 @@ const Closet = () => {
             </ProductList>
 
             <ProductList>
-                <h2>판매 완료 상품 현황</h2>
+                <H2>판매 완료 상품 현황</H2>
                 {soldProduct.length > 0 ? [...soldProduct].reverse().map((product) => (
                     <Product key={product.productId}>
                         <ProductImage src={product.mainImageFile.imagePath} alt="Product" />
@@ -430,7 +434,7 @@ const Closet = () => {
             </PriceInputModal>
 
             <OrderHistoryContainer>
-                <h2>판매 주문 기록</h2>
+                <H2>판매 주문 기록</H2>
                 <p>총 {orderHistory.length}건의 기록이 있습니다.</p>
                 {[...orderHistory].reverse().map((order) => (
                     <OrderItemContainer key={order.orderId}>
