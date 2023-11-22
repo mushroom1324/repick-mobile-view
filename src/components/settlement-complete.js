@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from 'react';
 import styled from "styled-components";
 import Confetti from "react-confetti";
+import loginHandler from "../api/login/login";
 
 const Container = styled.div`
   display: flex;
@@ -26,6 +27,15 @@ const Button = styled.button`
 `;
 
 const SettlementComplete = () => {
+    useEffect(() => {
+        // Fetch user data using accessToken
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            alert('로그인이 필요합니다.');
+            loginHandler();
+        }
+    }, []);
 
     const handleButtonClick = () => {
         window.location.href = "/closet";

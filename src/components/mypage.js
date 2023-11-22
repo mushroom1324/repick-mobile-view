@@ -8,6 +8,7 @@ import FormContainer from './styles/form-container';
 import Input from './styles/input';
 import Button from './styles/button';
 import ErrorText from "./styles/error-text";
+import loginHandler from "../api/login/login";
 
 import { CSSTransition } from 'react-transition-group';
 
@@ -87,6 +88,11 @@ const MyPage = () => {
     useEffect(() => {
         // Fetch user data using accessToken
         const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            alert('로그인이 필요합니다.');
+            loginHandler();
+        }
 
         const config = {
             headers: {

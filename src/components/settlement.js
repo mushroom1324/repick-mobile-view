@@ -5,6 +5,7 @@ import Label from './styles/label';
 import FormContainer from './styles/form-container';
 import Input from './styles/input';
 import Button from './styles/button';
+import loginHandler from "../api/login/login";
 
 const SettlementForm = () => {
     const [name, setName] = useState('');
@@ -13,6 +14,12 @@ const SettlementForm = () => {
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            alert('로그인이 필요합니다.');
+            loginHandler();
+        }
+
         const config = {
             headers: {
                 Authorization: `Bearer ${accessToken}`,

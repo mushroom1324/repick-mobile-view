@@ -13,26 +13,25 @@ import MyPage from './components/mypage';
 import Footer from './components/footer';
 
 function App() {
-  return (
-      <>
-          <Header />
-          <BrowserRouter>
-              <Routes>
-                  <Route path='/' exact element={<Home />} />
-                  <Route path='/home' element={<Home />} />
-                  <Route path='/closet' element={<Closet />} />
-                  <Route path='/login/kakaoLogin' element={<LoginCode />} />
-                  <Route path='/mypage' element={<MyPage />} />
-                  <Route path='/sell' element={<SellerForm />} />
-                  <Route path='/sell-complete' element={<SellComplete />} />
-                  <Route path='/settlement' element={<SettlementForm />} />
-                  <Route path='/settlement-complete' element={<SettlementComplete />} />
-              </Routes>
-          </BrowserRouter>
-          <Footer />
-      </>
-
-  );
+    return (
+        <div>
+            <Header />
+            <BrowserRouter>
+                <Routes>
+                    <Route path='/' exact element={<Home />} />
+                    <Route path='/home' element={<Home />} />
+                    <Route path='/closet' element={<Closet />} />
+                    <Route path='/login/kakaoLogin' element={<LoginCode />} />
+                    <Route path='/mypage' element={<MyPage />} />
+                    <Route path='/sell' element={<SellerForm />} />
+                    <Route path='/sell-complete' element={<SellComplete />} />
+                    <Route path='/settlement' element={<SettlementForm />} />
+                    <Route path='/settlement-complete' element={<SettlementComplete />} />
+                </Routes>
+            </BrowserRouter>
+            <Footer />
+        </div>
+);
 }
 
 export default App;

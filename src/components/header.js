@@ -42,7 +42,6 @@ function Header() {
             </div>
             <CSSTransition in={showMenu} timeout={200} classNames="menu" unmountOnExit>
                 <Menu>
-                    <h3>{name}님</h3>
                     <MenuItem onClick={() => window.location.href = '/mypage'}>마이페이지</MenuItem>
                     <MenuItem onClick={() => window.location.href = '/closet'}>옷장 정리</MenuItem>
                     <MenuItem onClick={logoutHandler}>로그아웃</MenuItem>

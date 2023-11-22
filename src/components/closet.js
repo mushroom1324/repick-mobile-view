@@ -5,6 +5,7 @@ import Title from './styles/title';
 import Button from './styles/button';
 import {ModalTitle} from "./styles/modal-wrapper";
 import {BagPendingModalWrapper, BagPendingCloseButton, BagPendingModalContent, BagPendingModalTitle} from "./styles/bag-modal";
+import loginHandler from "../api/login/login";
 
 
 const NoProductMessage = styled.p`
@@ -162,8 +163,13 @@ const Closet = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
 
     useEffect(() => {
-        console.log(process.env.REACT_APP_API_SERVER)
         const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            alert('로그인이 필요합니다.');
+            loginHandler();
+        }
+
         const config = {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -281,6 +287,15 @@ const Closet = () => {
         const { productId } = selectedProduct;
         const price = priceInput;
 
+        if (!price) {
+            alert('가격을 입력해주세요.');
+            return;
+        }
+        if (price % 1000 !== 0) {
+            alert('가격은 1000원 단위로 입력해주세요.');
+            return;
+        }
+
         const accessToken = localStorage.getItem('accessToken');
 
         const config = {
@@ -332,7 +347,7 @@ const Closet = () => {
     return (
         <SellerPageContainer>
             <Title>옷장 정리</Title>
-            <p>현재 {preparingProduct.length}건의 상품이 등록되어 있습니다.</p>
+            <p>현재 {preparingProduct.length + sellingProduct.length + soldProduct.length}건의 상품이 등록되어 있습니다.</p>
             <ApplyButton onClick={handleApplyClick}>옷장 정리 신청하러 가기</ApplyButton>
 
             <ProductList>

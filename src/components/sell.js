@@ -12,6 +12,7 @@ import ErrorText from "./styles/error-text";
 import { ModalTitle, ModalWrapper, ModalContent, CloseButton } from './styles/modal-wrapper';
 import bag_info from '../assets/bag_info.jpg';
 import question_mark from '../assets/question-mark-circle-outline.svg';
+import loginHandler from "../api/login/login";
 
 
 const SellerForm = () => {
@@ -57,6 +58,11 @@ const SellerForm = () => {
         // Fetch user data using accessToken
         const accessToken = localStorage.getItem('accessToken');
 
+        if (!accessToken) {
+            alert('로그인이 필요합니다.');
+            loginHandler();
+        }
+
         const config = {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -87,7 +93,6 @@ const SellerForm = () => {
                 }
             })
             .catch(error => {
-                alert('로그인 중 문제가 발생했습니다.');
                 console.error('Error fetching user data:', error);
             });
     }, []);
@@ -188,6 +193,14 @@ const SellerForm = () => {
             productQuantity: '',
         };
 
+        if (!Number.isInteger(Number(userData.bagQuantity))) {
+            newErrors.bagQuantity = '리픽백 수량을 정수로 입력해주세요.';
+        }
+
+        if (!Number.isInteger(Number(userData.productQuantity))) {
+            newErrors.productQuantity = '의류 수량을 정수로 입력해주세요.';
+        }
+
         if (userData.bagQuantity == null || userData.bagQuantity < 1) {
             newErrors.bagQuantity = '리픽백 수량을 1개 이상 입력해주세요.';
         }
@@ -271,6 +284,8 @@ const SellerForm = () => {
         if (!validateInputStep3()) {
             return;
         }
+
+        console.log(userData.address.requestDetail);
 
         // Update user data using accessToken
         // userData is body data
@@ -397,8 +412,8 @@ const SellerForm = () => {
                                 배송 요청사항:
                                 <Input
                                     type="text"
-                                    value={userData.address ? userData.address.request : ''}
-                                    onChange={(e) => handleInputChange('address.request', e.target.value)}
+                                    value={userData.requestDetail}
+                                    onChange={(e) => handleInputChange('requestDetail', e.target.value)}
                                     placeholder={'배송 시 요청사항을 입력해주세요'}
                                 />
                             </Label>
