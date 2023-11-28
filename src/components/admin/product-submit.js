@@ -4,6 +4,11 @@ import loginHandler from "../../api/login/login";
 import styled from 'styled-components';
 import Button from '../styles/button';
 
+const SmallButton = styled(Button)`
+    margin-top: 10px;
+    margin-right: 10px;
+`;
+
 const Text = styled.p`
 `;
 
@@ -39,7 +44,7 @@ function AdminProductSubmit() {
 
     const [mainImageFile, setMainImageFile] = useState(null);
     const [detailImageFiles, setDetailImageFiles] = useState([null]);
-    const [categoryIds, setCategoryIds] = useState([]);
+    const [categoryIds, setCategoryIds] = useState([null]);
     const [request, setRequest] = useState({
         name: '',
         detail: '',
@@ -69,12 +74,14 @@ function AdminProductSubmit() {
                 if (response.data !== 'ADMIN') {
                     alert('관리자 권한이 필요합니다.');
                     window.href.location = '/';
+
                 }
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
                 alert('에러가 발생했습니다.');
-                window.href.location = '/';
+                loginHandler();
+
             });
 
         // 판매 요청 가져오기
@@ -86,7 +93,7 @@ function AdminProductSubmit() {
                 console.error('Error fetching order history:', error);
             });
 
-    });
+    }, []);
 
     const handleFileChange = (e, index) => {
         if (e.target.files) {
@@ -131,26 +138,36 @@ function AdminProductSubmit() {
 
         const accessToken = localStorage.getItem('accessToken');
 
-        console.log(categoryIds);
-
+        // FormData 객체 생성
         const formData = new FormData();
+
+        // 대표 이미지 추가
         formData.append('mainImageFile', mainImageFile);
+
+        // 상세 이미지 추가
         detailImageFiles.forEach((file, index) => {
             formData.append(`detailImageFiles[${index}]`, file);
         });
-        formData.append('categoryIds', JSON.stringify(categoryIds));
-        Object.keys(request).forEach(key => {
-            formData.append(key, request[key]);
+
+        // 카테고리 ID 추가
+        categoryIds.forEach((categoryId, index) => {
+            formData.append(`categoryIds[${index}]`, categoryId);
         });
 
+        // 요청 정보 추가
+        const requestData = JSON.stringify(request);
+
+        formData.append('request', requestData);
+
+        // HTTP 요청 헤더 설정
         const config = {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 Authorization: `Bearer ${accessToken}`,
-            }
-        }
+            },
+        };
 
-
+        // 상품 등록 API 호출
         axios.post(process.env.REACT_APP_API_SERVER + 'products/register', formData, config)
             .then(response => {
                 if (response.status === 200) {
@@ -160,12 +177,36 @@ function AdminProductSubmit() {
                 }
             })
             .catch(error => {
-                console.log(formData.get('request'));
                 console.error('Error:', error);
                 alert('상품 등록에 실패했습니다.');
             });
-
     };
+
+    const finishHandler = (orderNumber) => (e) => {
+        e.preventDefault();
+
+        const accessToken = localStorage.getItem('accessToken');
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            }
+        }
+        const data = {
+            orderNumber: orderNumber,
+            sellState: "PUBLISHED",
+        }
+
+        axios.post(process.env.REACT_APP_API_SERVER + 'sell/admin/update', data, config)
+            .then(response => {
+                console.log(response.data);
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error updating order:', error);
+            });
+
+    }
 
     return (
         <Form onSubmit={handleSubmit}>
@@ -176,7 +217,7 @@ function AdminProductSubmit() {
                 <div key={index}>
                     <Input type="file" name="detailImageFiles" onChange={(e) => handleFileChange(e, index)} />
                     <div>
-                        <Button type="button" onClick={() => addImageInput()}>+</Button>
+                        <SmallButton type="button" onClick={() => addImageInput()}>+</SmallButton>
                         {detailImageFiles.length > 1 && <Button type="button" onClick={() => removeImageInput(index)}>-</Button>}
                     </div>
                 </div>
@@ -195,8 +236,8 @@ function AdminProductSubmit() {
                         <label><input type="radio" name={`categoryIds[${index}]`} value={7} onChange={(e) => handleCategoryIdChange(e, index)} />팬츠</label>
                         <label><input type="radio" name={`categoryIds[${index}]`} value={8} onChange={(e) => handleCategoryIdChange(e, index)} />스커트</label>
                     </RadioWrapper>
-                    <button type="button" onClick={() => addCategoryId()}>+</button>
-                    {categoryIds.length > 1 && <button type="button" onClick={() => removeCategoryId(index)}>-</button>}
+                    <SmallButton type="button" onClick={() => addCategoryId()}>+</SmallButton>
+                    {categoryIds.length > 1 && <SmallButton type="button" onClick={() => removeCategoryId(index)}>-</SmallButton>}
                 </div>
             ))}
             <Text>상품명</Text>
@@ -218,6 +259,7 @@ function AdminProductSubmit() {
                     <Text>우편번호: {order.address.zipCode}</Text>
                     <Text>요청 내용: {order.requestDetail}</Text>
                     <Text>판매 상태: {order.sellState}</Text>
+                    <Button onClick={finishHandler(order.orderNumber)}>모든 상품 등록 완료</Button>
                 </Order>
             ))}
         </Form>

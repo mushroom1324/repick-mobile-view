@@ -3,9 +3,8 @@ import axios from 'axios';
 import loginHandler from "../../api/login/login";
 import styled from 'styled-components';
 import Button from '../styles/button';
-import moment from 'moment';
+import moment from "moment/moment";
 import {Container} from '../styles/container';
-
 
 const Text = styled.p`
 `;
@@ -18,11 +17,13 @@ const Order = styled.div`
   border-radius: 4px;
 `;
 
-function AdminBagPender() {
+function AdminBagReady() {
 
     const [orderHistory, setOrderHistory] = useState([]);
 
     useEffect(() => {
+
+        console.log('AdminBagPender useEffect')
 
         // Fetch user data using accessToken
         const accessToken = localStorage.getItem('accessToken');
@@ -43,6 +44,7 @@ function AdminBagPender() {
                 if (response.data !== 'ADMIN') {
                     alert('관리자 권한이 필요합니다.');
                     window.href.location = '/';
+
                 }
             })
             .catch(error => {
@@ -53,7 +55,7 @@ function AdminBagPender() {
             });
 
         // 판매 요청 가져오기
-        axios.get(process.env.REACT_APP_API_SERVER + 'sell/admin/requested', config)
+        axios.get(process.env.REACT_APP_API_SERVER + 'sell/admin/bag_ready', config)
             .then(response => {
                 setOrderHistory(response.data);
             })
@@ -76,7 +78,7 @@ function AdminBagPender() {
         }
         const data = {
             orderNumber: orderNumber,
-            sellState: "BAG_PENDING",
+            sellState: "DELIVERED",
         }
 
         axios.post(process.env.REACT_APP_API_SERVER + 'sell/admin/update', data, config)
@@ -91,7 +93,7 @@ function AdminBagPender() {
 
     return (
         <Container>
-            <h1>최초 신청 주문 리스트</h1>
+            <h1>리픽백 배출 완료 주문 리스트</h1>
             {orderHistory.map((order) => (
                 <Order key={order.id}>
                     <Text>주문 번호: {order.orderNumber}</Text>
@@ -104,11 +106,11 @@ function AdminBagPender() {
                     <Text>의류 수량: {order.productQuantity}</Text>
                     <Text>리픽백 수량: {order.bagQuantity}</Text>
                     <Text>신청일: {moment(order.createdDate).format('YYYY년 MM월 DD일 H시 m분')}</Text>
-                    <Button onClick={createBagPenderHandler(order.orderNumber)}>리픽백 배송 완료하기</Button>
+                    <Button onClick={createBagPenderHandler(order.orderNumber)}>리픽백 수거 신청 완료하기</Button>
                 </Order>
             ))}
         </Container>
     );
 }
 
-export default AdminBagPender;
+export default AdminBagReady;

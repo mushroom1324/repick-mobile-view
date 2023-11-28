@@ -124,8 +124,8 @@ const MyPage = () => {
                 }
             })
             .catch(error => {
-                alert('로그인 중 문제가 발생했습니다.')
                 console.error('Error fetching user data:', error);
+                loginHandler();
             });
     }, []);
 

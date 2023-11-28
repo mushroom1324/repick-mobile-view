@@ -4,9 +4,8 @@ import axios from 'axios';
 import Title from './styles/title';
 import Button from './styles/button';
 import {ModalTitle} from "./styles/modal-wrapper";
-import {BagPendingModalWrapper, BagPendingCloseButton, BagPendingModalContent, BagPendingModalTitle} from "./styles/bag-modal";
+import {BagPendingModalSmallContent, BagPendingInput, BagPendingModalWrapper, BagPendingCloseButton, BagPendingModalContent, BagPendingModalTitle} from "./styles/bag-modal";
 import loginHandler from "../api/login/login";
-
 
 const H2 = styled.h2`
   color: #3E3E3F;
@@ -164,7 +163,9 @@ const Closet = () => {
     const [priceSum, setPriceSum] = useState(0);
 
     const [bagDispatchedModal, setBagDispatchedModal] = useState(false);
+    const [cancelSellModal, setCancelSellModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [bagQuantity, setBagQuantity] = useState(null);
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
@@ -187,6 +188,7 @@ const Closet = () => {
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
+                loginHandler();
             });
 
         // 판매중 상품 가져오기
@@ -196,6 +198,7 @@ const Closet = () => {
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
+                loginHandler();
             });
 
         // 판매 완료 상품 가져오기
@@ -210,6 +213,7 @@ const Closet = () => {
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
+                loginHandler();
             });
         // 판매 요청 가져오기
         axios.get(process.env.REACT_APP_API_SERVER + 'sell/history/requests', config)
@@ -217,7 +221,8 @@ const Closet = () => {
                 setOrderHistory(response.data);
             })
             .catch(error => {
-                console.error('Error fetching order history:', error);
+                console.error('Error fetching user data:', error);
+                loginHandler();
             });
     }, []);
 
@@ -233,6 +238,52 @@ const Closet = () => {
     };
 
     const handleBagDispatchedConfirm = () => {
+
+        if (bagQuantity > 10) {
+            alert('리픽백 최대 수량은 10개입니다.');
+            return;
+        }
+
+        if (bagQuantity != null && bagQuantity < 1) {
+            alert('리픽백 수량은 1개 이상이어야 합니다.');
+            return;
+        }
+
+        const accessToken = localStorage.getItem('accessToken');
+
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            }
+        };
+
+        const body = {
+            orderNumber: selectedOrder.orderNumber,
+            bagQuantity: bagQuantity,
+        }
+
+        axios.post(process.env.REACT_APP_API_SERVER + 'sell/bag-ready', body, config)
+            .then(response => {
+                console.log('Bag Dispatched Success:', response.data);
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Bag Dispatched Error:', error);
+            });
+    };
+
+    const openCancelSellModal = (order) => {
+        setSelectedOrder(order);
+        setCancelSellModal(true);
+    };
+
+    const closeCancelSellModal = () => {
+        setSelectedOrder(null);
+        setCancelSellModal(false);
+    };
+
+    const handleCancelSellConfirm = () => {
         const accessToken = localStorage.getItem('accessToken');
 
 
@@ -246,13 +297,13 @@ const Closet = () => {
             orderNumber: selectedOrder.orderNumber,
         }
 
-        axios.post(process.env.REACT_APP_API_SERVER + 'sell/bag-ready', body, config)
+        axios.post(process.env.REACT_APP_API_SERVER + 'sell/cancel', body, config)
             .then(response => {
-                console.log('Bag Dispatched Success:', response.data);
+                console.log('Sell Cancel:', response.data);
                 window.location.reload();
             })
             .catch(error => {
-                console.error('Bag Dispatched Error:', error);
+                console.error('Sell Cancel Error:', error);
             });
     };
 
@@ -339,7 +390,7 @@ const Closet = () => {
             case 'CANCELLED':
                 return '취소됨';
             case 'DELIVERED':
-                return '리픽백 수거됨';
+                return '리픽백 수거중';
             case 'PUBLISHED':
                 return '상품 등록 완료됨';
             default:
@@ -347,6 +398,10 @@ const Closet = () => {
         }
     };
 
+
+    const handleBagQuantityChange = (e) => {
+        setBagQuantity(e.target.value);
+    }
 
     return (
         <SellerPageContainer>
@@ -455,6 +510,11 @@ const Closet = () => {
                                 리픽백 배출
                             </Button>
                         )}
+                        {order.sellState === 'REQUESTED' && (
+                            <Button onClick={() => openCancelSellModal(order)}>
+                                취소하기
+                            </Button>
+                        )}
                     </OrderItemContainer>
                 ))}
             </OrderHistoryContainer>
@@ -462,8 +522,17 @@ const Closet = () => {
             <BagPendingModalWrapper show={bagDispatchedModal}>
                 <BagPendingModalTitle>리픽백 배출 확인</BagPendingModalTitle>
                 <BagPendingModalContent>리픽백 배출을 완료하셨나요?</BagPendingModalContent>
+                <BagPendingInput type={"number"} placeholder={"살제 배출한 리픽백 수량을 입력해주세요"} value={bagQuantity} onChange={handleBagQuantityChange}></BagPendingInput>
+                <BagPendingModalSmallContent>최대 수량 : 10개</BagPendingModalSmallContent>
+                <BagPendingModalSmallContent>입력하지 않으면 신청 당시 수량으로 처리됩니다.</BagPendingModalSmallContent>
                 <BagPendingCloseButton onClick={handleBagDispatchedConfirm}>예</BagPendingCloseButton>
                 <BagPendingCloseButton onClick={closeBagDispatchedModal}>아니오</BagPendingCloseButton>
+            </BagPendingModalWrapper>
+            <BagPendingModalWrapper show={cancelSellModal}>
+                <BagPendingModalTitle>옷장 정리 취소 확인</BagPendingModalTitle>
+                <BagPendingModalContent>정말 해당 주문을 취소하시겠어요?</BagPendingModalContent>
+                <BagPendingCloseButton onClick={handleCancelSellConfirm}>예</BagPendingCloseButton>
+                <BagPendingCloseButton onClick={closeCancelSellModal}>아니오</BagPendingCloseButton>
             </BagPendingModalWrapper>
         </SellerPageContainer>
     );

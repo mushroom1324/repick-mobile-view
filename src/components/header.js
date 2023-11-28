@@ -44,6 +44,7 @@ function Header() {
                 <Menu>
                     <MenuItem onClick={() => window.location.href = '/mypage'}>마이페이지</MenuItem>
                     <MenuItem onClick={() => window.location.href = '/closet'}>옷장 정리</MenuItem>
+                    <MenuItem onClick={() => window.location.href = 'https://repick-official.oopy.io/574d9964-a932-444b-8c16-a88403984e5d'}>자주 묻는 질문</MenuItem>
                     <MenuItem onClick={logoutHandler}>로그아웃</MenuItem>
                 </Menu>
             </CSSTransition>

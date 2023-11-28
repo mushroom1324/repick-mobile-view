@@ -30,6 +30,12 @@ export const BagPendingModalContent = styled.p`
   text-align: center;
 `;
 
+export const BagPendingModalSmallContent = styled(BagPendingModalContent)`
+    font-size: 0.8em;
+    margin-top: 0;
+`;
+
+
 export const BagPendingCloseButton = styled.button`
   display: block;
   width: 100%;
@@ -44,4 +50,15 @@ export const BagPendingCloseButton = styled.button`
   &:hover {
     background-color: #333;
   }
+`;
+
+export const BagPendingInput = styled.input`
+    display: block;
+    width: 100%;
+    margin-bottom: 20px;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
 `;

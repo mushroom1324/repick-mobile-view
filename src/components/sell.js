@@ -104,6 +104,7 @@ const SellerForm = () => {
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
+                loginHandler();
             });
     }, []);
 
@@ -208,15 +209,19 @@ const SellerForm = () => {
         }
 
         if (!Number.isInteger(Number(userData.productQuantity))) {
-            newErrors.productQuantity = '의류 수량을 정수로 입력해주세요.';
+            newErrors.productQuantity = '의류 예상 수량을 정수로 입력해주세요.';
         }
 
         if (userData.bagQuantity == null || userData.bagQuantity < 1) {
             newErrors.bagQuantity = '리픽백 수량을 1개 이상 입력해주세요.';
         }
 
+        if (userData.bagQuantity > 10) {
+            newErrors.bagQuantity = '리픽백 수량을 10개 이하로 입력해주세요.';
+        }
+
         if (userData.productQuantity == null || userData.productQuantity < 5) {
-            newErrors.productQuantity = '의류 수량은 5개 이상 입력해주세요.';
+            newErrors.productQuantity = '의류 예상 수량은 5개 이상 입력해주세요.';
         }
 
         setErrors(newErrors);
@@ -338,7 +343,7 @@ const SellerForm = () => {
                                 <Input
                                     type="text" value={userData.email}
                                     onChange={(e) => handleInputChange('email', e.target.value)}
-                                    placeholder="전화번호가 잘못되었을 경우 비상 연락망"
+                                    placeholder="이메일을 입력해주세요"
                                 />
                                 {errors.email && <ErrorText>{errors.email}</ErrorText>}
                             </Label>
@@ -360,7 +365,7 @@ const SellerForm = () => {
                         <Label>
                             <p>2단계 : 의류 및 리픽백 수량 정보</p>
                             <Label>
-                                <Text>의류 수량:</Text>
+                                <Text>의류 예상 수량:</Text>
                                 <Input
                                     type="number"
                                     value={userData.productQuantity}
