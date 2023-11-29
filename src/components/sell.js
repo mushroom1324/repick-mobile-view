@@ -9,7 +9,7 @@ import Input from './styles/input';
 import Button from './styles/button';
 import PostalCodeButton from './styles/postal-code-button';
 import ErrorText from "./styles/error-text";
-import { ModalTitle, ModalWrapper, ModalContent, CloseButton } from './styles/modal-wrapper';
+import { ModalWrapper, ModalContent, CloseButton } from './styles/modal-wrapper';
 import bag_info from '../assets/bag_info.jpg';
 import question_mark from '../assets/question-mark-circle-outline.svg';
 import loginHandler from "../api/login/login";
@@ -220,8 +220,8 @@ const SellerForm = () => {
             newErrors.bagQuantity = '리픽백 수량을 10개 이하로 입력해주세요.';
         }
 
-        if (userData.productQuantity == null || userData.productQuantity < 5) {
-            newErrors.productQuantity = '의류 예상 수량은 5개 이상 입력해주세요.';
+        if (userData.productQuantity == null || userData.productQuantity < 15) {
+            newErrors.productQuantity = '의류 예상 수량은 15개 이상 입력해주세요.';
         }
 
         setErrors(newErrors);
