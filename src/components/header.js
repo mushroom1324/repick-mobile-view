@@ -9,18 +9,11 @@ import kakao_logo from '../assets/kakao_login_small.png';
 function Header() {
     const [showMenu, setShowMenu] = useState(false);
     const [nickname, setNickname] = useState('');
-    const [name, setName] = useState('익명');
 
     useEffect(() => {
         const nicknameFromStorage = localStorage.getItem('nickname');
         if (nicknameFromStorage) {
             setNickname(nicknameFromStorage);
-        }
-
-        // do same for name
-        const nameFromStorage = localStorage.getItem('name');
-        if (nameFromStorage) {
-            setName(nameFromStorage);
         }
 
     }, []);
