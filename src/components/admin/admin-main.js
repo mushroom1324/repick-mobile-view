@@ -60,7 +60,7 @@ function AdminMain() {
         <AdminContainer>
             <h1>관리자 페이지 (베타)</h1>
             <ButtonContainer>
-                <Button onClick={() => window.location.href = '/admin/sell-requested'}>최초 주문 리스트</Button>
+                <Button onClick={() => window.location.href = '/admin/sell-requests'}>최초 주문 리스트</Button>
             </ButtonContainer>
             <ButtonContainer>
                 <Button onClick={() => window.location.href = '/admin/bag-ready'}>리픽백 배출된 주문 리스트</Button>
