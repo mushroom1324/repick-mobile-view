@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import loginHandler from "../../api/login/login";
 import styled from 'styled-components';
-import Button from '../styles/button';
 import moment from 'moment';
 import {Container} from '../styles/container';
 
