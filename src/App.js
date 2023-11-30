@@ -15,7 +15,8 @@ import Footer from './components/footer';
 
 import AdminMain from './components/admin/admin-main';
 import AdminProductSubmitForm from "./components/admin/product-submit";
-import AdminBagPender from "./components/admin/bag-pender";
+import AdminBagRequests from "./components/admin/bag-requests";
+import AdminBagPending from "./components/admin/bag-pending";
 import AdminBagReady from "./components/admin/bag-ready";
 
 function App() {
@@ -35,7 +36,8 @@ function App() {
                     <Route path='/settlement-complete' element={<SettlementComplete />} />
                     <Route path='/admin' element={<AdminMain />} />
                     <Route path='/admin/product-submit' element={<AdminProductSubmitForm />} />
-                    <Route path='/admin/sell-requests' element={<AdminBagPender />} />
+                    <Route path='/admin/sell-requests' element={<AdminBagRequests />} />
+                    <Route path='admin/bag-pending' element={<AdminBagPending />} />
                     <Route path='/admin/bag-ready' element={<AdminBagReady />} />
                 </Routes>
             </BrowserRouter>

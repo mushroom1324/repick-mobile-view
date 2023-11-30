@@ -18,7 +18,7 @@ const Order = styled.div`
   border-radius: 4px;
 `;
 
-function AdminBagPender() {
+function AdminBagRequests() {
 
     const [orderHistory, setOrderHistory] = useState([]);
 
@@ -111,4 +111,4 @@ function AdminBagPender() {
     );
 }
 
-export default AdminBagPender;
+export default AdminBagRequests;

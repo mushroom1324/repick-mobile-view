@@ -63,6 +63,9 @@ function AdminMain() {
                 <Button onClick={() => window.location.href = '/admin/sell-requests'}>최초 주문 리스트</Button>
             </ButtonContainer>
             <ButtonContainer>
+                <Button onClick={() => window.location.href = '/admin/bag-pending'}>리픽백 발송 후 대기중 주문 리스트</Button>
+            </ButtonContainer>
+            <ButtonContainer>
                 <Button onClick={() => window.location.href = '/admin/bag-ready'}>리픽백 배출된 주문 리스트</Button>
             </ButtonContainer>
             <ButtonContainer>
