@@ -3,6 +3,8 @@ import axios from 'axios';
 import loginHandler from "../../api/login/login";
 import styled from 'styled-components';
 import Button from '../styles/button';
+import {AdminContainer, OrderHistoryContainer, Order} from '../styles/order-history-container';
+
 
 const SmallButton = styled(Button)`
     margin-top: 10px;
@@ -25,14 +27,6 @@ const Input = styled.input`
   border-radius: 4px;
   width: 80%;
   box-sizing: border-box;
-`;
-
-const Order = styled.div`
-  width: 80%;
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 4px;
 `;
 
 const RadioWrapper = styled.div`
@@ -251,21 +245,25 @@ function AdminProductSubmit() {
             <Input type="text" name="sellOrderNumber" onChange={handleInputChange} value={request.sellOrderNumber} />
 
             <Button type="submit">제출</Button>
-            <h1>수거 완료 주문 리스트</h1>
-            <Text>총 주문 수: {orderHistory.length}개</Text>
-            {orderHistory.map((order) => (
-                <Order key={order.id}>
-                    {count++}
-                    <Text>주문 번호: {order.orderNumber}</Text>
-                    <Text>이름: {order.name}</Text>
-                    <Text>전화번호: {order.phoneNumber}</Text>
-                    <Text>주소: {order.address.mainAddress} {order.address.detailAddress}</Text>
-                    <Text>우편번호: {order.address.zipCode}</Text>
-                    <Text>요청 내용: {order.requestDetail}</Text>
-                    <Text>판매 상태: {order.sellState}</Text>
-                    <Button onClick={finishHandler(order.orderNumber)}>모든 상품 등록 완료</Button>
-                </Order>
-            ))}
+            <AdminContainer>
+                <h1>수거 완료 주문 리스트</h1>
+                <Text>총 주문 수: {orderHistory.length}개</Text>
+                <OrderHistoryContainer>
+                    {orderHistory.map((order) => (
+                        <Order key={order.id}>
+                            <h3>{count++}</h3>
+                            <Text>주문 번호: {order.orderNumber}</Text>
+                            <Text>이름: {order.name}</Text>
+                            <Text>전화번호: {order.phoneNumber}</Text>
+                            <Text>주소: {order.address.mainAddress} {order.address.detailAddress}</Text>
+                            <Text>우편번호: {order.address.zipCode}</Text>
+                            <Text>요청 내용: {order.requestDetail}</Text>
+                            <Text>판매 상태: {order.sellState}</Text>
+                            <Button onClick={finishHandler(order.orderNumber)}>모든 상품 등록 완료</Button>
+                        </Order>
+                    ))}
+                </OrderHistoryContainer>
+            </AdminContainer>
         </Form>
     );
 }

@@ -4,18 +4,10 @@ import loginHandler from "../../api/login/login";
 import styled from 'styled-components';
 import Button from '../styles/button';
 import moment from 'moment';
-import {Container} from '../styles/container';
+import {AdminContainer, OrderHistoryContainer, Order} from '../styles/order-history-container';
 
 
 const Text = styled.p`
-`;
-
-const Order = styled.div`
-  width: 80%;
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 4px;
 `;
 
 function AdminBagRequests() {
@@ -92,26 +84,28 @@ function AdminBagRequests() {
     let count = 1;
 
     return (
-        <Container>
+        <AdminContainer>
             <h1>최초 신청 주문 리스트</h1>
             <Text>총 주문 수: {orderHistory.length}개</Text>
-            {orderHistory.map((order) => (
-                <Order key={order.id}>
-                    {count++}
-                    <Text>주문 번호: {order.orderNumber}</Text>
-                    <Text>이름: {order.name}</Text>
-                    <Text>전화번호: {order.phoneNumber}</Text>
-                    <Text>우편번호: {order.address.zipCode}</Text>
-                    <Text>주소: {order.address.mainAddress}</Text>
-                    <Text>상세주소: {order.address.detailAddress}</Text>
-                    <Text>요청 내용: {order.requestDetail}</Text>
-                    <Text>의류 수량: {order.productQuantity}</Text>
-                    <Text>리픽백 수량: {order.bagQuantity}</Text>
-                    <Text>신청일: {moment(order.createdDate).format('YYYY년 MM월 DD일 H시 m분')}</Text>
-                    <Button onClick={createBagPenderHandler(order.orderNumber)}>리픽백 배송 완료하기</Button>
-                </Order>
-            ))}
-        </Container>
+            <OrderHistoryContainer>
+                {orderHistory.map((order) => (
+                    <Order key={order.id}>
+                        <h3>{count++}</h3>
+                        <Text>주문 번호: {order.orderNumber}</Text>
+                        <Text>이름: {order.name}</Text>
+                        <Text>전화번호: {order.phoneNumber}</Text>
+                        <Text>우편번호: {order.address.zipCode}</Text>
+                        <Text>주소: {order.address.mainAddress}</Text>
+                        <Text>상세주소: {order.address.detailAddress}</Text>
+                        <Text>요청 내용: {order.requestDetail}</Text>
+                        <Text>의류 수량: {order.productQuantity}</Text>
+                        <Text>리픽백 수량: {order.bagQuantity}</Text>
+                        <Text>신청일: {moment(order.createdDate).format('YYYY년 MM월 DD일 H시 m분')}</Text>
+                        <Button onClick={createBagPenderHandler(order.orderNumber)}>리픽백 배송 완료하기</Button>
+                    </Order>
+                ))}
+            </OrderHistoryContainer>
+        </AdminContainer>
     );
 }
 
