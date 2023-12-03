@@ -86,8 +86,8 @@ function AdminProductSubmit() {
 
         // 판매 요청 가져오기
         axios.get(process.env.REACT_APP_API_SERVER + 'sell/admin/delivered', config)
-            .then(response => {
-                setOrderHistory(response.data);
+            .then((response) => {
+                setOrderHistory(response.data.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate)));
             })
             .catch(error => {
                 console.error('Error fetching order history:', error);
@@ -208,6 +208,8 @@ function AdminProductSubmit() {
 
     }
 
+    let count = 1;
+
     return (
         <Form onSubmit={handleSubmit}>
             <Text>대표 이미지</Text>
@@ -222,7 +224,6 @@ function AdminProductSubmit() {
                     </div>
                 </div>
             ))}
-            <Text>카테고리</Text>
             <Text>카테고리</Text>
             {categoryIds.map((_, index) => (
                 <div key={index}>
@@ -250,8 +251,11 @@ function AdminProductSubmit() {
             <Input type="text" name="sellOrderNumber" onChange={handleInputChange} value={request.sellOrderNumber} />
 
             <Button type="submit">제출</Button>
+            <h1>수거 완료 주문 리스트</h1>
+            <Text>총 주문 수: {orderHistory.length}개</Text>
             {orderHistory.map((order) => (
                 <Order key={order.id}>
+                    {count++}
                     <Text>주문 번호: {order.orderNumber}</Text>
                     <Text>이름: {order.name}</Text>
                     <Text>전화번호: {order.phoneNumber}</Text>

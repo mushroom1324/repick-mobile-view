@@ -54,8 +54,8 @@ function AdminBagRequests() {
 
         // 판매 요청 가져오기
         axios.get(process.env.REACT_APP_API_SERVER + 'sell/admin/requested', config)
-            .then(response => {
-                setOrderHistory(response.data);
+            .then((response) => {
+                setOrderHistory(response.data.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate)));
             })
             .catch(error => {
                 console.error('Error fetching order history:', error);
@@ -89,11 +89,15 @@ function AdminBagRequests() {
             });
     }
 
+    let count = 1;
+
     return (
         <Container>
             <h1>최초 신청 주문 리스트</h1>
+            <Text>총 주문 수: {orderHistory.length}개</Text>
             {orderHistory.map((order) => (
                 <Order key={order.id}>
+                    {count++}
                     <Text>주문 번호: {order.orderNumber}</Text>
                     <Text>이름: {order.name}</Text>
                     <Text>전화번호: {order.phoneNumber}</Text>
