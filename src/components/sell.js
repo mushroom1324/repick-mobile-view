@@ -220,8 +220,8 @@ const SellerForm = () => {
             newErrors.bagQuantity = '리픽백 수량을 10개 이하로 입력해주세요.';
         }
 
-        if (userData.productQuantity == null || userData.productQuantity < 15) {
-            newErrors.productQuantity = '의류 예상 수량은 15개 이상 입력해주세요.';
+        if (userData.productQuantity == null || userData.productQuantity < 25) {
+            newErrors.productQuantity = '의류 예상 수량은 25벌 이상 입력해주세요.';
         }
 
         setErrors(newErrors);
@@ -372,6 +372,7 @@ const SellerForm = () => {
                                     onChange={(e) => handleInputChange('productQuantity', e.target.value)}
                                 />
                                 {errors.productQuantity && <ErrorText>{errors.productQuantity}</ErrorText>}
+                                <Text>의류는 25벌 이상 입력해주세요!</Text>
                             </Label>
 
                             <Label>
