@@ -26,6 +26,13 @@ const Text = styled.div`
 `;
 
 const SellerForm = () => {
+
+    // 신청 차단
+    useEffect(() => {
+        alert('현재 주문량 폭주로 주문이 불가능합니다.');
+        window.location.href = '/';
+    }, []);
+
     const [step, setStep] = useState(1);
     const [userData, setUserData] = useState({
         address: {

@@ -29,7 +29,7 @@ const ApplyButton = styled.button`
   width: 100%;
   padding: 15px;
   margin-top: 20px;
-  background-color: #000;
+  background-color: grey;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -73,7 +73,7 @@ const PriceInputModal = styled.div`
 
 const PriceInputLabel = styled.label`
   display: block;
-  margin-top: 0px;
+  margin-top: 0;
   margin-bottom: 10px;
 `;
 
@@ -318,9 +318,9 @@ const Closet = () => {
         window.location.href = '/settlement';
     };
 
-    const handleApplyClick = () => {
-        window.location.href = '/sell';
-    };
+    // const handleApplyClick = () => {
+    //     window.location.href = '/sell';
+    // };
 
     const openPriceInputModal = (product) => {
         setSelectedProduct(product);
@@ -407,7 +407,7 @@ const Closet = () => {
         <SellerPageContainer>
             <Title>옷장 정리</Title>
             <p>현재 {preparingProduct.length + sellingProduct.length + soldProduct.length}건의 상품이 등록되어 있습니다.</p>
-            <ApplyButton onClick={handleApplyClick}>옷장 정리 신청하러 가기</ApplyButton>
+            <ApplyButton>주문량 폭주로 현재 신청이 불가해요 🥲</ApplyButton>
 
             <ProductList>
                 <H2>판매 준비 중인 상품 현황</H2>
