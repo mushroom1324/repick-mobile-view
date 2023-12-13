@@ -4,6 +4,7 @@ import loginHandler from "../../api/login/login";
 import styled from 'styled-components';
 import Button from '../styles/button';
 import {AdminContainer, OrderHistoryContainer, Order} from '../styles/order-history-container';
+import moment from "moment/moment";
 
 
 const SmallButton = styled(Button)`
@@ -255,10 +256,13 @@ function AdminProductSubmit() {
                             <Text>주문 번호: {order.orderNumber}</Text>
                             <Text>이름: {order.name}</Text>
                             <Text>전화번호: {order.phoneNumber}</Text>
-                            <Text>주소: {order.address.mainAddress} {order.address.detailAddress}</Text>
                             <Text>우편번호: {order.address.zipCode}</Text>
+                            <Text>주소: {order.address.mainAddress}</Text>
+                            <Text>상세주소: {order.address.detailAddress}</Text>
                             <Text>요청 내용: {order.requestDetail}</Text>
-                            <Text>판매 상태: {order.sellState}</Text>
+                            <Text>의류 수량: {order.productQuantity}</Text>
+                            <Text>리픽백 수량: {order.bagQuantity}</Text>
+                            <Text>신청일: {moment(order.createdDate).format('YYYY년 MM월 DD일 H시 m분')}</Text>
                             <Button onClick={finishHandler(order.orderNumber)}>모든 상품 등록 완료</Button>
                         </Order>
                     ))}
