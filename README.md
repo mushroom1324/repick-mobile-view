@@ -1,5 +1,4 @@
 # 리픽 모바일 뷰 웹 페이지
-https://app.repick.seoul.kr/
 
 <img width="364" alt="image" src="https://github.com/mushroom1324/repick-mobile-view/assets/76674422/737e09c4-d366-4ebc-b5c1-6996c8c1f5f1">
 
